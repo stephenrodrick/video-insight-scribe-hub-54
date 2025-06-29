@@ -1,10 +1,11 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface ApiKeys {
   openai: string;
@@ -35,8 +36,8 @@ export const useApiKeys = () => {
 
 export const ApiKeyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [apiKeys, setApiKeys] = useState<ApiKeys>({
-    openai: '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',
-    youtube: 'AIzaSyC-9IHDxSpNuLsQfKl4LlfXvN_GSUTJDIk',
+    openai: '',
+    youtube: '',
   });
   const [showApiKeyDialog, setShowApiKeyDialog] = useState(false);
   const [tempKeys, setTempKeys] = useState<ApiKeys>(apiKeys);
@@ -49,15 +50,8 @@ export const ApiKeyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setApiKeys(parsed);
       setTempKeys(parsed);
     } else {
-      // Set default API keys provided by user
-      setApiKeys({
-        openai: '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',
-        youtube: 'AIzaSyC-9IHDxSpNuLsQfKl4LlfXvN_GSUTJDIk',
-      });
-      localStorage.setItem('api-keys', JSON.stringify({
-        openai: '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',
-        youtube: 'AIzaSyC-9IHDxSpNuLsQfKl4LlfXvN_GSUTJDIk',
-      }));
+      // Show API key dialog if no keys are saved
+      setShowApiKeyDialog(true);
     }
   }, []);
 
@@ -78,24 +72,34 @@ export const ApiKeyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       {children}
       
       <Dialog open={showApiKeyDialog} onOpenChange={setShowApiKeyDialog}>
-        <DialogContent className="bg-slate-900 border-white/20 text-white">
+        <DialogContent className="bg-slate-900 border-white/20 text-white max-w-md">
           <DialogHeader>
-            <DialogTitle>API Configuration</DialogTitle>
+            <DialogTitle>API Configuration Required</DialogTitle>
           </DialogHeader>
+          
+          <Alert className="bg-amber-500/10 border-amber-500/20 text-amber-200">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              You need to provide your own API keys to use this application. Get your keys from:
+              <br />• OpenAI: <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="underline">platform.openai.com</a>
+              <br />• YouTube: <a href="https://console.developers.google.com" target="_blank" rel="noopener noreferrer" className="underline">Google Cloud Console</a>
+            </AlertDescription>
+          </Alert>
+          
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="openai-key">OpenAI API Key</Label>
+              <Label htmlFor="openai-key">OpenAI API Key *</Label>
               <Input
                 id="openai-key"
                 type="password"
                 value={tempKeys.openai}
                 onChange={(e) => setTempKeys({ ...tempKeys, openai: e.target.value })}
-                placeholder="sk-..."
+                placeholder="sk-proj-..."
                 className="bg-white/10 border-white/30 text-white"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="youtube-key">YouTube API Key</Label>
+              <Label htmlFor="youtube-key">YouTube API Key *</Label>
               <Input
                 id="youtube-key"
                 type="password"
@@ -105,7 +109,11 @@ export const ApiKeyProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 className="bg-white/10 border-white/30 text-white"
               />
             </div>
-            <Button onClick={handleSaveKeys} className="w-full">
+            <Button 
+              onClick={handleSaveKeys} 
+              className="w-full"
+              disabled={!tempKeys.openai.trim() || !tempKeys.youtube.trim()}
+            >
               Save API Keys
             </Button>
           </div>
