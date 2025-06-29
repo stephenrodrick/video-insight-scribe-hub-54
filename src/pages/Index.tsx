@@ -17,16 +17,16 @@ const Index = () => {
   useEffect(() => {
     // Show welcome message
     toast({
-      title: "Welcome to AI Video Transcriber!",
-      description: "Upload a video or enter a YouTube URL to get started with AI-powered transcription and analysis.",
+      title: "🎬 Welcome to AI Video Transcriber Pro!",
+      description: "Transform your videos into intelligent insights with cutting-edge AI technology.",
     });
   }, [toast]);
 
   const handleVideoProcessed = (results: any) => {
     setAnalysisResults(results);
     toast({
-      title: "Video Analysis Complete!",
-      description: "Your video has been successfully transcribed and analyzed.",
+      title: "🎉 Analysis Complete!",
+      description: "Your video has been successfully processed with AI-powered transcription and analysis.",
     });
   };
 
@@ -34,19 +34,21 @@ const Index = () => {
     <ApiKeyProvider>
       <SocketProvider>
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-          {/* Animated background elements */}
-          <div className="absolute inset-0 bg-tech-pattern opacity-10"></div>
-          <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          {/* Professional animated background */}
+          <div className="absolute inset-0 bg-tech-pattern opacity-5"></div>
+          <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute top-1/2 right-0 w-64 h-64 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute bottom-0 left-1/2 w-80 h-80 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
           
-          {/* Background image overlay */}
+          {/* Professional tech grid overlay */}
           <div 
-            className="absolute inset-0 opacity-5"
+            className="absolute inset-0 opacity-[0.02]"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=1920&h=1080&fit=crop')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat'
+              backgroundImage: `
+                linear-gradient(rgba(59, 130, 246, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.3) 1px, transparent 1px)
+              `,
+              backgroundSize: '50px 50px'
             }}
           ></div>
 
@@ -54,22 +56,46 @@ const Index = () => {
             <Header />
             
             <main className="container mx-auto px-4 py-8">
-              <div className="max-w-6xl mx-auto space-y-8">
-                {/* Hero Section */}
-                <div className="text-center space-y-6 mb-12">
-                  <h1 className="text-5xl md:text-7xl font-bold font-poppins bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-fade-in">
-                    AI Video Transcriber
+              <div className="max-w-7xl mx-auto space-y-8">
+                {/* Professional Hero Section */}
+                <div className="text-center space-y-6 mb-16">
+                  <div className="flex justify-center mb-6">
+                    <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center animate-pulse-glow">
+                      <span className="text-3xl font-bold text-white">🎬</span>
+                    </div>
+                  </div>
+                  
+                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-poppins bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-fade-in">
+                    AI Video Transcriber Pro
                   </h1>
-                  <p className="text-xl md:text-2xl text-gray-300 font-inter max-w-3xl mx-auto animate-slide-up">
-                    Transform your videos into intelligent insights with real-time AI transcription, 
-                    summarization, and analysis powered by OpenAI Whisper and GPT.
+                  
+                  <p className="text-lg md:text-xl lg:text-2xl text-gray-300 font-inter max-w-4xl mx-auto animate-slide-up leading-relaxed">
+                    Professional-grade video transcription and analysis powered by 
+                    <span className="text-blue-400 font-semibold"> OpenAI Whisper</span> and 
+                    <span className="text-purple-400 font-semibold"> GPT-4</span>. 
+                    Transform your content into actionable insights with real-time processing.
                   </p>
+                  
+                  <div className="flex flex-wrap justify-center gap-4 mt-8">
+                    <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                      <span className="text-sm text-gray-300">Speech-to-Text</span>
+                    </div>
+                    <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                      <span className="text-sm text-gray-300">Smart Analysis</span>
+                    </div>
+                    <div className="flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                      <span className="text-sm text-gray-300">Real-time Processing</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Real-time Status */}
                 <RealtimeStatus />
 
-                {/* Video Upload Section */}
+                {/* Main Content Grid */}
                 <div className="grid lg:grid-cols-2 gap-8">
                   <div className="space-y-6">
                     <VideoUploader 
@@ -79,39 +105,45 @@ const Index = () => {
                   </div>
                   
                   <div className="space-y-6">
-                    {(currentVideo || analysisResults) && (
-                      <VideoAnalysis 
-                        video={currentVideo}
-                        results={analysisResults}
-                      />
-                    )}
+                    <VideoAnalysis 
+                      video={currentVideo}
+                      results={analysisResults}
+                    />
                   </div>
                 </div>
 
-                {/* Features Section */}
-                <div className="mt-16 grid md:grid-cols-3 gap-8">
-                  <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-all duration-300 animate-fade-in">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                      <span className="text-2xl font-bold text-white">🎵</span>
+                {/* Professional Features Section */}
+                <div className="mt-20 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-all duration-300 animate-fade-in group">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <span className="text-2xl font-bold text-white">🎤</span>
                     </div>
-                    <h3 className="text-xl font-semibold text-white mb-2">AI Transcription</h3>
-                    <p className="text-gray-300">Advanced speech-to-text powered by OpenAI Whisper</p>
+                    <h3 className="text-xl font-semibold text-white mb-2">OpenAI Whisper</h3>
+                    <p className="text-gray-300">State-of-the-art speech recognition with 99%+ accuracy</p>
                   </div>
 
-                  <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-all duration-300 animate-fade-in delay-200">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                  <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-all duration-300 animate-fade-in delay-200 group">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                       <span className="text-2xl font-bold text-white">🧠</span>
                     </div>
-                    <h3 className="text-xl font-semibold text-white mb-2">Smart Analysis</h3>
-                    <p className="text-gray-300">Intelligent summarization and key insights extraction</p>
+                    <h3 className="text-xl font-semibold text-white mb-2">GPT-4 Analysis</h3>
+                    <p className="text-gray-300">Advanced content analysis with key insights and summaries</p>
                   </div>
 
-                  <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-all duration-300 animate-fade-in delay-400">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center">
+                  <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-all duration-300 animate-fade-in delay-400 group">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                       <span className="text-2xl font-bold text-white">⚡</span>
                     </div>
-                    <h3 className="text-xl font-semibold text-white mb-2">Real-time Updates</h3>
-                    <p className="text-gray-300">Live processing status with Socket.io integration</p>
+                    <h3 className="text-xl font-semibold text-white mb-2">Real-time Processing</h3>
+                    <p className="text-gray-300">Live progress updates with Socket.io integration</p>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center hover:bg-white/10 transition-all duration-300 animate-fade-in delay-600 group">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <span className="text-2xl font-bold text-white">🎬</span>
+                    </div>
+                    <h3 className="text-xl font-semibold text-white mb-2">Multi-format Support</h3>
+                    <p className="text-gray-300">Video uploads and YouTube URL processing</p>
                   </div>
                 </div>
               </div>

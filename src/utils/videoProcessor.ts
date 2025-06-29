@@ -13,48 +13,47 @@ export class VideoProcessor {
 
   async processVideoFile(file: File, onProgress: (progress: number, status: string) => void) {
     try {
-      onProgress(10, 'Preparing video for processing...');
+      onProgress(5, 'Validating file...');
+      
+      // Validate file type and size
+      if (!file.type.includes('video') && !file.type.includes('audio')) {
+        throw new Error('Please select a valid video or audio file');
+      }
+      
+      if (file.size > 25 * 1024 * 1024) { // 25MB limit for OpenAI
+        throw new Error('File size must be less than 25MB for transcription');
+      }
+
+      onProgress(10, 'Preparing for transcription...');
       this.socketService.emitProcessingUpdate('preparing', 10);
 
-      // Extract audio from video (simplified - in real app you'd use FFmpeg)
-      onProgress(30, 'Extracting audio from video...');
-      this.socketService.emitProcessingUpdate('extracting_audio', 30);
-      
-      // For demo, we'll simulate audio extraction and use the video file directly
-      // In production, you'd extract audio using FFmpeg or similar
-      await this.delay(1000);
-
-      onProgress(50, 'Transcribing audio with Whisper AI...');
-      this.socketService.emitProcessingUpdate('transcribing', 50);
+      onProgress(30, 'Transcribing with OpenAI Whisper...');
+      this.socketService.emitProcessingUpdate('transcribing', 30);
 
       let transcription: string;
       try {
-        // Try to transcribe with OpenAI Whisper
         transcription = await this.apiService.transcribeAudio(file);
-      } catch (error) {
-        console.warn('OpenAI transcription failed, using mock data:', error);
-        // Fallback to mock transcription for demo
-        transcription = `This is a mock transcription of the uploaded video file: ${file.name}. The video contains spoken content that would normally be transcribed using OpenAI's Whisper API. In a production environment, this would be the actual transcribed text from the audio track.`;
+        
+        if (!transcription || transcription.trim().length === 0) {
+          throw new Error('No speech detected in the file');
+        }
+        
+        console.log('Transcription completed:', transcription.substring(0, 100) + '...');
+      } catch (error: any) {
+        console.error('Transcription failed:', error.message);
+        throw new Error(`Speech-to-text failed: ${error.message}`);
       }
 
-      onProgress(70, 'Analyzing transcription...');
-      this.socketService.emitProcessingUpdate('analyzing', 70);
+      onProgress(60, 'Analyzing content with AI...');
+      this.socketService.emitProcessingUpdate('analyzing', 60);
 
       let analysis;
       try {
         analysis = await this.apiService.analyzeText(transcription);
-      } catch (error) {
-        console.warn('OpenAI analysis failed, using mock data:', error);
-        // Fallback to mock analysis
-        analysis = {
-          summary: 'This video discusses various topics and provides insights on the subject matter. The content appears to be informative and engaging.',
-          keyInsights: [
-            'The video provides valuable information on the main topic',
-            'Key points are well-structured and easy to understand',
-            'The content is suitable for the target audience'
-          ],
-          sentiment: 'Positive'
-        };
+        console.log('Analysis completed successfully');
+      } catch (error: any) {
+        console.error('Analysis failed:', error.message);
+        throw new Error(`Smart analysis failed: ${error.message}`);
       }
 
       onProgress(90, 'Finalizing results...');
@@ -65,8 +64,12 @@ export class VideoProcessor {
         summary: analysis.summary,
         keyInsights: analysis.keyInsights,
         sentiment: analysis.sentiment,
-        duration: this.getVideoDuration(file),
+        topics: analysis.topics || [],
+        actionItems: analysis.actionItems || [],
+        duration: await this.getVideoDuration(file),
         wordCount: transcription.split(' ').length,
+        fileName: file.name,
+        fileSize: this.formatFileSize(file.size),
         processedAt: new Date().toISOString()
       };
 
@@ -74,8 +77,8 @@ export class VideoProcessor {
       this.socketService.emitAnalysisComplete(results);
 
       return results;
-    } catch (error) {
-      console.error('Video processing error:', error);
+    } catch (error: any) {
+      console.error('Video processing error:', error.message);
       this.socketService.emitEvent('processing_error', { error: error.message });
       throw error;
     }
@@ -83,61 +86,59 @@ export class VideoProcessor {
 
   async processYouTubeVideo(url: string, onProgress: (progress: number, status: string) => void) {
     try {
-      onProgress(10, 'Fetching YouTube video info...');
+      onProgress(10, 'Extracting video ID...');
       
       const videoId = this.apiService.extractVideoId(url);
       if (!videoId) {
-        throw new Error('Invalid YouTube URL');
+        throw new Error('Invalid YouTube URL format');
       }
 
+      onProgress(20, 'Fetching video information...');
+      
       let videoInfo;
       try {
         videoInfo = await this.apiService.getYouTubeVideoInfo(videoId);
-      } catch (error) {
-        console.warn('YouTube API failed, using mock data:', error);
-        // Fallback to mock video info
-        videoInfo = {
-          snippet: {
-            title: 'Sample YouTube Video',
-            tags: ['demo', 'sample', 'video']
-          },
-          contentDetails: {
-            duration: 'PT3M45S'
-          }
-        };
+      } catch (error: any) {
+        throw new Error(`YouTube error: ${error.message}`);
       }
       
-      onProgress(30, 'Processing YouTube video...');
+      onProgress(40, 'Generating transcription...');
       
-      // For demo purposes, we'll simulate transcription
-      const mockTranscription = `This is a simulated transcription of the YouTube video: ${videoInfo.snippet.title}. The video discusses various topics related to ${videoInfo.snippet.tags?.join(', ') || 'general content'}. This would normally be the actual transcribed content from the video's audio track.`;
+      // Note: YouTube API doesn't provide direct transcription
+      // In a real implementation, you'd need to download the audio and transcribe it
+      const mockTranscription = `Transcription for YouTube video: "${videoInfo.snippet.title}". 
+      This video discusses topics related to ${videoInfo.snippet.tags?.slice(0, 3).join(', ') || 'general content'}. 
+      Description: ${videoInfo.snippet.description.substring(0, 200)}...
       
-      onProgress(70, 'Analyzing content...');
+      Note: This is a simulated transcription. For real YouTube transcription, you would need to:
+      1. Download the video audio using youtube-dl or similar
+      2. Process it through OpenAI Whisper
+      3. Analyze the actual content`;
+      
+      onProgress(70, 'Analyzing video content...');
       
       let analysis;
       try {
         analysis = await this.apiService.analyzeText(mockTranscription);
-      } catch (error) {
-        console.warn('Analysis failed, using mock data:', error);
-        analysis = {
-          summary: `This YouTube video titled "${videoInfo.snippet.title}" provides informative content on its subject matter.`,
-          keyInsights: [
-            'The video covers relevant topics for its audience',
-            'Content is well-structured and informative',
-            'Good production quality and presentation'
-          ],
-          sentiment: 'Positive'
-        };
+      } catch (error: any) {
+        throw new Error(`Analysis failed: ${error.message}`);
       }
+      
+      onProgress(90, 'Finalizing results...');
       
       const results = {
         transcription: mockTranscription,
         summary: analysis.summary,
         keyInsights: analysis.keyInsights,
         sentiment: analysis.sentiment,
+        topics: analysis.topics || [],
+        actionItems: analysis.actionItems || [],
         duration: this.parseYouTubeDuration(videoInfo.contentDetails.duration),
         wordCount: mockTranscription.split(' ').length,
         title: videoInfo.snippet.title,
+        channelTitle: videoInfo.snippet.channelTitle,
+        viewCount: videoInfo.statistics?.viewCount || '0',
+        publishedAt: videoInfo.snippet.publishedAt,
         processedAt: new Date().toISOString()
       };
 
@@ -145,19 +146,40 @@ export class VideoProcessor {
       this.socketService.emitAnalysisComplete(results);
 
       return results;
-    } catch (error) {
-      console.error('YouTube processing error:', error);
+    } catch (error: any) {
+      console.error('YouTube processing error:', error.message);
+      this.socketService.emitEvent('processing_error', { error: error.message });
       throw error;
     }
   }
 
-  private getVideoDuration(file: File): string {
-    // In a real app, you'd extract this from the video metadata
-    return '3:45'; // Placeholder
+  private async getVideoDuration(file: File): Promise<string> {
+    return new Promise((resolve) => {
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+      
+      video.onloadedmetadata = () => {
+        const duration = video.duration;
+        const minutes = Math.floor(duration / 60);
+        const seconds = Math.floor(duration % 60);
+        resolve(`${minutes}:${seconds.toString().padStart(2, '0')}`);
+      };
+      
+      video.onerror = () => {
+        resolve('Unknown');
+      };
+      
+      video.src = URL.createObjectURL(file);
+      
+      // Cleanup after 5 seconds
+      setTimeout(() => {
+        URL.revokeObjectURL(video.src);
+        resolve('Unknown');
+      }, 5000);
+    });
   }
 
   private parseYouTubeDuration(duration: string): string {
-    // Parse ISO 8601 duration format (PT4M13S -> 4:13)
     const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
     if (!match) return '0:00';
 
@@ -171,7 +193,11 @@ export class VideoProcessor {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }
 
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  private formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 }
