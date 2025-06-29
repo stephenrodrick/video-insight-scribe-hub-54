@@ -10,20 +10,18 @@ export class ApiService {
     this.youtubeApiKey = youtubeKey;
   }
 
-  // OpenAI Whisper API for transcription
-  async transcribeAudio(audioBlob: Blob): Promise<string> {
-    try {
-      const formData = new FormData();
-      formData.append('file', audioBlob, 'audio.mp3');
-      formData.append('model', 'whisper-1');
+  async transcribeAudio(audioFile: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', audioFile);
+    formData.append('model', 'whisper-1');
 
+    try {
       const response = await axios.post('https://api.openai.com/v1/audio/transcriptions', formData, {
         headers: {
           'Authorization': `Bearer ${this.openaiApiKey}`,
           'Content-Type': 'multipart/form-data',
         },
       });
-
       return response.data.text;
     } catch (error) {
       console.error('Transcription error:', error);
@@ -31,23 +29,30 @@ export class ApiService {
     }
   }
 
-  // OpenAI GPT API for summarization
-  async generateSummary(text: string): Promise<{ summary: string; insights: string[]; sentiment: string }> {
+  async analyzeText(text: string): Promise<{
+    summary: string;
+    keyInsights: string[];
+    sentiment: string;
+  }> {
     try {
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
         model: 'gpt-3.5-turbo',
         messages: [
           {
             role: 'system',
-            content: 'You are an AI assistant that analyzes video transcriptions. Provide a concise summary, key insights as bullet points, and overall sentiment (Positive, Negative, or Neutral).'
+            content: 'You are an AI assistant that analyzes transcribed text and provides summaries, key insights, and sentiment analysis.'
           },
           {
             role: 'user',
-            content: `Please analyze this video transcription and provide:\n1. A brief summary\n2. Key insights (3-5 points)\n3. Overall sentiment\n\nTranscription: ${text}`
+            content: `Please analyze this transcribed text and provide:
+            1. A concise summary
+            2. 3-5 key insights
+            3. Overall sentiment (Positive, Negative, or Neutral)
+            
+            Text: ${text}`
           }
         ],
         temperature: 0.7,
-        max_tokens: 500,
       }, {
         headers: {
           'Authorization': `Bearer ${this.openaiApiKey}`,
@@ -55,45 +60,59 @@ export class ApiService {
         },
       });
 
-      const result = response.data.choices[0].message.content;
+      const content = response.data.choices[0].message.content;
       
       // Parse the response (this is a simplified parser)
-      const sections = result.split('\n\n');
-      const summary = sections[0]?.replace('Summary:', '').trim() || '';
-      const insights = sections[1]?.split('\n').filter((line: string) => line.trim().startsWith('-')).map((line: string) => line.replace('-', '').trim()) || [];
-      const sentiment = sections[2]?.replace('Sentiment:', '').trim() || 'Neutral';
+      const lines = content.split('\n').filter((line: string) => line.trim());
+      let summary = '';
+      let keyInsights: string[] = [];
+      let sentiment = 'Neutral';
 
-      return { summary, insights, sentiment };
+      let currentSection = '';
+      for (const line of lines) {
+        if (line.toLowerCase().includes('summary')) {
+          currentSection = 'summary';
+        } else if (line.toLowerCase().includes('insight')) {
+          currentSection = 'insights';
+        } else if (line.toLowerCase().includes('sentiment')) {
+          currentSection = 'sentiment';
+        } else if (line.trim() && currentSection === 'summary') {
+          summary += line + ' ';
+        } else if (line.trim() && currentSection === 'insights') {
+          keyInsights.push(line.replace(/^\d+\.?\s*/, '').trim());
+        } else if (line.trim() && currentSection === 'sentiment') {
+          if (line.toLowerCase().includes('positive')) sentiment = 'Positive';
+          else if (line.toLowerCase().includes('negative')) sentiment = 'Negative';
+          else sentiment = 'Neutral';
+        }
+      }
+
+      return {
+        summary: summary.trim() || 'Summary not available',
+        keyInsights: keyInsights.length > 0 ? keyInsights : ['Analysis not available'],
+        sentiment
+      };
     } catch (error) {
-      console.error('Summary generation error:', error);
-      throw new Error('Failed to generate summary');
+      console.error('Analysis error:', error);
+      throw new Error('Failed to analyze text');
     }
   }
 
-  // YouTube API for video metadata
-  async getYouTubeVideoInfo(videoId: string): Promise<any> {
+  async getYouTubeVideoInfo(videoId: string) {
     try {
-      const response = await axios.get(`https://www.googleapis.com/youtube/v3/videos`, {
-        params: {
-          part: 'snippet,statistics,contentDetails',
-          id: videoId,
-          key: this.youtubeApiKey,
-        },
-      });
-
+      const response = await axios.get(
+        `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${this.youtubeApiKey}&part=snippet,contentDetails`
+      );
       return response.data.items[0];
     } catch (error) {
       console.error('YouTube API error:', error);
-      throw new Error('Failed to fetch YouTube video information');
+      throw new Error('Failed to fetch YouTube video info');
     }
   }
 
-  // Extract YouTube video ID from URL
-  extractYouTubeVideoId(url: string): string | null {
+  extractVideoId(url: string): string | null {
     const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/;
     const match = url.match(regex);
     return match ? match[1] : null;
   }
 }
-
-export default ApiService;

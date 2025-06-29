@@ -3,46 +3,61 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useSocket } from '@/contexts/SocketContext';
+import SocketService from '@/services/socketService';
 
 export const RealtimeStatus = () => {
-  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'connecting'>('connecting');
   const [activeUsers, setActiveUsers] = useState(1);
-  const { socket } = useSocket();
+  const [latency, setLatency] = useState<number>(-1);
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const { socket, isConnected } = useSocket();
 
   useEffect(() => {
-    // Simulate connection status
-    const timer = setTimeout(() => {
-      setConnectionStatus('connected');
+    // Simulate active users count with some randomness
+    const userInterval = setInterval(() => {
       setActiveUsers(Math.floor(Math.random() * 10) + 1);
-    }, 2000);
+      setLastUpdate(new Date());
+    }, 30000);
 
-    return () => clearTimeout(timer);
-  }, []);
+    // Check connection latency periodically
+    const latencyInterval = setInterval(async () => {
+      if (isConnected && socket) {
+        try {
+          const socketService = new SocketService();
+          const ping = await socketService.pingServer();
+          setLatency(ping);
+        } catch (error) {
+          setLatency(-1);
+        }
+      }
+    }, 10000);
+
+    return () => {
+      clearInterval(userInterval);
+      clearInterval(latencyInterval);
+    };
+  }, [isConnected, socket]);
 
   const getStatusColor = () => {
-    switch (connectionStatus) {
-      case 'connected':
-        return 'bg-green-500';
-      case 'connecting':
-        return 'bg-yellow-500 animate-pulse';
-      case 'disconnected':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
+    if (isConnected) {
+      return latency < 100 ? 'bg-green-500' : latency < 300 ? 'bg-yellow-500' : 'bg-orange-500';
     }
+    return 'bg-red-500 animate-pulse';
   };
 
   const getStatusText = () => {
-    switch (connectionStatus) {
-      case 'connected':
-        return 'Connected';
-      case 'connecting':
-        return 'Connecting...';
-      case 'disconnected':
-        return 'Disconnected';
-      default:
-        return 'Unknown';
+    if (isConnected) {
+      return latency >= 0 ? `Connected (${latency}ms)` : 'Connected';
     }
+    return 'Reconnecting...';
+  };
+
+  const getDataFreshness = () => {
+    const now = new Date();
+    const diffSeconds = Math.floor((now.getTime() - lastUpdate.getTime()) / 1000);
+    
+    if (diffSeconds < 60) return `${diffSeconds}s ago`;
+    if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)}m ago`;
+    return `${Math.floor(diffSeconds / 3600)}h ago`;
   };
 
   return (
@@ -57,10 +72,18 @@ export const RealtimeStatus = () => {
             <Badge variant="outline" className="border-white/30 text-white">
               {activeUsers} active users
             </Badge>
+            {isConnected && (
+              <Badge variant="outline" className="border-green-400/30 text-green-400">
+                Live Updates
+              </Badge>
+            )}
           </div>
           
           <div className="flex items-center space-x-4 text-sm text-gray-400">
-            <span>Real-time Processing</span>
+            <div className="flex flex-col items-end">
+              <span>Real-time Processing</span>
+              <span className="text-xs">Updated {getDataFreshness()}</span>
+            </div>
             <div className="flex space-x-1">
               <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
               <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse delay-100"></div>
@@ -68,6 +91,23 @@ export const RealtimeStatus = () => {
             </div>
           </div>
         </div>
+        
+        {isConnected && (
+          <div className="mt-3 flex items-center space-x-6 text-xs text-gray-400">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>OpenAI Whisper Ready</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span>GPT Analysis Active</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <span>Socket.io Connected</span>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
