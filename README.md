@@ -1,73 +1,103 @@
-# Welcome to your Lovable project
+### AudX ###
+# Video Insight Scribe Hub
 
-## Project info
+A powerful tool for automatic video transcription, analysis, and insight generation using AI.
 
-**URL**: https://lovable.dev/projects/24222af0-47bc-4752-9537-31173139c6c2
+## Features
 
-## How can I edit this code?
+- 🎥 **Video Processing**: Extract audio from various video formats
+- 🎙️ **Speech-to-Text**: Accurate transcription using advanced ASR models
+- 🔍 **Content Analysis**: Generate summaries and key insights
+- 📊 **Metadata Extraction**: Detect speakers, topics, and sentiment
+- 📁 **Batch Processing**: Handle multiple files efficiently
 
-There are several ways of editing your application.
+## Installation
 
-**Use Lovable**
+### Prerequisites
+- Python 3.8+
+- FFmpeg (for video processing)
+- [Optional] NVIDIA GPU for accelerated processing
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/24222af0-47bc-4752-9537-31173139c6c2) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Setup
+```bash
+git clone https://github.com/stephenrodrick/video-insight-scribe-hub-54.git
+cd video-insight-scribe-hub-54
+pip install -r requirements.txt
 ```
 
-**Edit a file directly in GitHub**
+## Usage
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Basic Command
+```bash
+python main.py --input video.mp4 --output insights.json
+```
 
-**Use GitHub Codespaces**
+### Advanced Options
+```bash
+python main.py \
+  --input /path/to/videos \
+  --output ./results \
+  --model large \
+  --language en \
+  --summarize
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Configuration
+Edit `config/settings.yaml` to customize:
+- Model parameters
+- Output formats
+- Analysis depth
 
-## What technologies are used for this project?
+## API Integration
 
-This project is built with:
+```python
+from video_insight import VideoAnalyzer
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+analyzer = VideoAnalyzer(model="medium")
+results = analyzer.process("presentation.mp4")
+print(results.summary)
+```
 
-## How can I deploy this project?
+## Supported Formats
 
-Simply open [Lovable](https://lovable.dev/projects/24222af0-47bc-4752-9537-31173139c6c2) and click on Share -> Publish.
+| Video Format | Audio Format | Notes               |
+|--------------|--------------|---------------------|
+| MP4          | WAV          | Recommended format  |
+| MOV          | MP3          |                     |
+| AVI          | FLAC         |                     |
 
-## Can I connect a custom domain to my Lovable project?
+## Roadmap
 
-Yes, you can!
+- [ ] Real-time processing capability
+- [ ] Speaker diarization improvements
+- [ ] Multilingual support expansion
+- [ ] Web interface development
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Contributing
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## Contact
+
+Stephen Rodrick - [@stephenrodrick](https://twitter.com/stephenrodrick) - email@example.com
+
+Project Link: [https://github.com/stephenrodrick/video-insight-scribe-hub-54](https://github.com/stephenrodrick/video-insight-scribe-hub-54)
+(https://spectacular-baklava-83adcf.netlify.app/) 
+```
+
+**Notes for customization**:
+1. Replace placeholder images with actual screenshots/diagrams
+2. Update contact information with real details
+3. Add specific technical details about the models and algorithms used
+4. Include actual installation requirements from your `requirements.txt`
+5. Add example outputs or demo gifs if available
+
+Would you like me to modify any specific section or add more technical details about particular components?
