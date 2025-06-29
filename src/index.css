@@ -1,47 +1,10 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 3.9%;
-    --sidebar-primary: 0 0% 9%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 0 0% 96.1%;
-    --sidebar-accent-foreground: 0 0% 9%;
-    --sidebar-border: 0 0% 89.8%;
-    --sidebar-ring: 0 0% 3.9%;
-  }
-
-  .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -74,6 +37,7 @@
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 0 0% 14.9%;
     --sidebar-ring: 0 0% 83.1%;
+    --radius: 0.5rem;
   }
 }
 
@@ -84,119 +48,178 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
   }
   
-  /* Professional scrollbar styling */
+  /* Dark theme scrollbar styling */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
   
   ::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.3);
     border-radius: 4px;
   }
   
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
     border-radius: 4px;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
+    background: linear-gradient(135deg, #7c3aed, #db2777);
   }
   
-  /* Professional selection styling */
+  /* Audio-themed selection styling */
   ::selection {
-    background: rgba(59, 130, 246, 0.3);
+    background: rgba(139, 92, 246, 0.3);
     color: white;
   }
   
-  /* Smooth focus transitions */
+  /* Enhanced focus states */
   button:focus,
   input:focus,
   textarea:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.5);
   }
 }
 
 @layer components {
-  /* Professional glass effect */
+  /* Audio-themed glass effect */
   .glass-effect {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(139, 92, 246, 0.2);
   }
   
-  /* Enhanced tech pattern */
-  .bg-tech-pattern {
+  /* Audio waveform pattern */
+  .bg-audio-pattern {
     background-image: 
-      radial-gradient(circle at 2px 2px, rgba(59, 130, 246, 0.15) 1px, transparent 0),
-      linear-gradient(45deg, rgba(59, 130, 246, 0.05) 25%, transparent 25%),
-      linear-gradient(-45deg, rgba(59, 130, 246, 0.05) 25%, transparent 25%);
-    background-size: 40px 40px, 80px 80px, 80px 80px;
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 10px,
+        rgba(139, 92, 246, 0.1) 10px,
+        rgba(139, 92, 246, 0.1) 12px
+      ),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 20px,
+        rgba(236, 72, 153, 0.1) 20px,
+        rgba(236, 72, 153, 0.1) 22px
+      );
   }
   
-  /* Professional button hover effects */
-  .btn-professional {
+  /* Audio-themed button effects */
+  .btn-audio {
     @apply transition-all duration-300 ease-in-out;
     transform: translateY(0);
+    background: linear-gradient(135deg, #8b5cf6, #ec4899);
   }
   
-  .btn-professional:hover {
+  .btn-audio:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+    background: linear-gradient(135deg, #7c3aed, #db2777);
   }
   
-  /* Enhanced card animations */
-  .card-hover {
+  /* Enhanced card animations with audio theme */
+  .card-audio {
     @apply transition-all duration-300 ease-in-out;
     transform: translateY(0) scale(1);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(139, 92, 246, 0.2);
   }
   
-  .card-hover:hover {
+  .card-audio:hover {
     transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
+    border-color: rgba(139, 92, 246, 0.4);
   }
 }
 
-/* Professional loading animations */
-@keyframes shimmer {
-  0% {
-    background-position: -200px 0;
+/* Audio-themed loading animations */
+@keyframes audio-pulse {
+  0%, 100% {
+    transform: scaleY(1);
+    opacity: 0.7;
   }
-  100% {
-    background-position: calc(200px + 100%) 0;
+  50% {
+    transform: scaleY(1.5);
+    opacity: 1;
   }
 }
 
-.loading-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  background-size: 200px 100%;
-  animation: shimmer 2s infinite;
+@keyframes waveform {
+  0%, 100% {
+    height: 20px;
+  }
+  25% {
+    height: 40px;
+  }
+  50% {
+    height: 60px;
+  }
+  75% {
+    height: 30px;
+  }
 }
 
-/* Professional gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.audio-loading {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.audio-loading div {
+  width: 4px;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  animation: waveform 1.5s ease-in-out infinite;
+}
+
+.audio-loading div:nth-child(2) { animation-delay: 0.1s; }
+.audio-loading div:nth-child(3) { animation-delay: 0.2s; }
+.audio-loading div:nth-child(4) { animation-delay: 0.3s; }
+.audio-loading div:nth-child(5) { animation-delay: 0.4s; }
+
+/* Audio gradient text */
+.gradient-audio {
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Enhanced pulse animation */
-@keyframes professional-pulse {
+/* Enhanced pulse animation for audio elements */
+@keyframes audio-glow {
   0%, 100% {
-    transform: scale(1);
-    opacity: 1;
+    box-shadow: 0 0 5px rgba(139, 92, 246, 0.5);
   }
   50% {
-    transform: scale(1.05);
-    opacity: 0.8;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.8), 0 0 30px rgba(236, 72, 153, 0.6);
   }
 }
 
-.pulse-professional {
-  animation: professional-pulse 2s ease-in-out infinite;
+.pulse-audio {
+  animation: audio-glow 2s ease-in-out infinite;
+}
+
+/* Headphone icon animations */
+@keyframes headphone-bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.headphone-bounce {
+  animation: headphone-bounce 2s infinite;
 }

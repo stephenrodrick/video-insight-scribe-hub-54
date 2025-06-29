@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Headphones, Mic, Waveform, Volume2, BarChart3, Brain } from 'lucide-react';
 
 interface VideoAnalysisProps {
   video: any;
@@ -13,19 +13,22 @@ interface VideoAnalysisProps {
 export const VideoAnalysis: React.FC<VideoAnalysisProps> = ({ video, results }) => {
   if (!results) {
     return (
-      <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+      <Card className="bg-black/40 backdrop-blur-xl border-purple-500/20 text-white">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <span className="text-2xl">🎬</span>
-            <span>AI Analysis Results</span>
+          <CardTitle className="flex items-center space-x-3">
+            <div className="relative">
+              <BarChart3 className="w-6 h-6 text-purple-400" />
+              <div className="absolute inset-0 blur-sm bg-purple-400/30 rounded"></div>
+            </div>
+            <span className="font-orbitron">AI Analysis Results</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
-              <span className="text-2xl">📊</span>
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center">
+              <Headphones className="w-8 h-8 text-purple-400" />
             </div>
-            <p className="text-gray-400">Upload and process a video to see detailed AI analysis</p>
+            <p className="text-gray-400">Upload and process audio to see detailed AI analysis</p>
           </div>
         </CardContent>
       </Card>
@@ -42,40 +45,40 @@ export const VideoAnalysis: React.FC<VideoAnalysisProps> = ({ video, results }) 
 
   return (
     <div className="space-y-6">
-      {/* Video Info Card */}
-      <Card className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 backdrop-blur-sm border-white/20 text-white">
+      {/* Audio Info Card */}
+      <Card className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-xl border-purple-500/20 text-white">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <span className="text-xl">📹</span>
-            <span>Video Information</span>
+          <CardTitle className="flex items-center space-x-3">
+            <Volume2 className="w-5 h-5 text-purple-400" />
+            <span className="font-orbitron">Audio Information</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-3 bg-white/5 rounded-lg">
+            <div className="text-center p-3 bg-black/20 rounded-lg border border-purple-500/20">
               <p className="text-sm text-gray-400">Duration</p>
-              <p className="font-bold text-lg">{results.duration}</p>
+              <p className="font-bold text-lg text-purple-400">{results.duration}</p>
             </div>
-            <div className="text-center p-3 bg-white/5 rounded-lg">
+            <div className="text-center p-3 bg-black/20 rounded-lg border border-pink-500/20">
               <p className="text-sm text-gray-400">Words</p>
-              <p className="font-bold text-lg">{results.wordCount?.toLocaleString()}</p>
+              <p className="font-bold text-lg text-pink-400">{results.wordCount?.toLocaleString()}</p>
             </div>
-            <div className="text-center p-3 bg-white/5 rounded-lg">
+            <div className="text-center p-3 bg-black/20 rounded-lg border border-orange-500/20">
               <p className="text-sm text-gray-400">Sentiment</p>
               <Badge className={`${getSentimentColor(results.sentiment)} font-semibold`}>
                 {results.sentiment}
               </Badge>
             </div>
-            <div className="text-center p-3 bg-white/5 rounded-lg">
+            <div className="text-center p-3 bg-black/20 rounded-lg border border-purple-500/20">
               <p className="text-sm text-gray-400">Source</p>
-              <p className="font-bold text-lg capitalize">{video?.type || 'Upload'}</p>
+              <p className="font-bold text-lg text-purple-400 capitalize">{video?.type || 'Upload'}</p>
             </div>
           </div>
           
           {results.fileName && (
-            <div className="mt-4 p-3 bg-white/5 rounded-lg">
+            <div className="mt-4 p-3 bg-black/20 rounded-lg border border-purple-500/20">
               <p className="text-sm text-gray-400">File Details</p>
-              <p className="font-semibold">{results.fileName}</p>
+              <p className="font-semibold text-purple-400">{results.fileName}</p>
               {results.fileSize && <p className="text-sm text-gray-400">{results.fileSize}</p>}
             </div>
           )}
@@ -83,11 +86,11 @@ export const VideoAnalysis: React.FC<VideoAnalysisProps> = ({ video, results }) 
       </Card>
 
       {/* AI Transcription */}
-      <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+      <Card className="bg-black/40 backdrop-blur-xl border-purple-500/20 text-white">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <span className="text-xl">🎤</span>
-            <span>AI Speech-to-Text</span>
+          <CardTitle className="flex items-center space-x-3">
+            <Mic className="w-5 h-5 text-purple-400" />
+            <span className="font-orbitron">AI Speech-to-Text</span>
             <Badge variant="outline" className="border-green-400 text-green-400">
               OpenAI Whisper
             </Badge>
@@ -95,7 +98,7 @@ export const VideoAnalysis: React.FC<VideoAnalysisProps> = ({ video, results }) 
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-48 w-full">
-            <div className="p-4 bg-black/20 rounded-lg">
+            <div className="p-4 bg-black/30 rounded-lg border border-purple-500/20">
               <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
                 {results.transcription}
               </p>
@@ -105,36 +108,36 @@ export const VideoAnalysis: React.FC<VideoAnalysisProps> = ({ video, results }) 
       </Card>
 
       {/* Smart Analysis Summary */}
-      <Card className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm border-white/20 text-white">
+      <Card className="bg-gradient-to-r from-pink-500/10 to-orange-500/10 backdrop-blur-xl border-pink-500/20 text-white">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <span className="text-xl">🧠</span>
-            <span>Smart Analysis Summary</span>
-            <Badge variant="outline" className="border-purple-400 text-purple-400">
+          <CardTitle className="flex items-center space-x-3">
+            <Brain className="w-5 h-5 text-pink-400" />
+            <span className="font-orbitron">Smart Analysis Summary</span>
+            <Badge variant="outline" className="border-pink-400 text-pink-400">
               GPT-4
             </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="p-4 bg-white/5 rounded-lg">
+          <div className="p-4 bg-black/20 rounded-lg border border-pink-500/20">
             <p className="text-gray-300 leading-relaxed">{results.summary}</p>
           </div>
         </CardContent>
       </Card>
 
       {/* Key Insights */}
-      <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+      <Card className="bg-black/40 backdrop-blur-xl border-purple-500/20 text-white">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <span className="text-xl">💡</span>
-            <span>Key Insights</span>
+          <CardTitle className="flex items-center space-x-3">
+            <Waveform className="w-5 h-5 text-purple-400" />
+            <span className="font-orbitron">Key Insights</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {results.keyInsights?.map((insight: string, index: number) => (
-              <div key={index} className="flex items-start space-x-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-sm font-bold text-white mt-0.5 flex-shrink-0">
+              <div key={index} className="flex items-start space-x-3 p-3 bg-black/20 rounded-lg hover:bg-black/30 transition-colors border border-purple-500/20">
+                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-sm font-bold text-white mt-0.5 flex-shrink-0">
                   {index + 1}
                 </div>
                 <p className="text-gray-300 flex-1">{insight}</p>
@@ -148,11 +151,11 @@ export const VideoAnalysis: React.FC<VideoAnalysisProps> = ({ video, results }) 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Topics */}
         {results.topics && results.topics.length > 0 && (
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+          <Card className="bg-black/40 backdrop-blur-xl border-purple-500/20 text-white">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center space-x-3">
                 <span className="text-xl">🏷️</span>
-                <span>Topics Detected</span>
+                <span className="font-orbitron">Topics Detected</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -161,7 +164,7 @@ export const VideoAnalysis: React.FC<VideoAnalysisProps> = ({ video, results }) 
                   <Badge 
                     key={index} 
                     variant="outline" 
-                    className="border-blue-400 text-blue-400 bg-blue-400/10"
+                    className="border-purple-400 text-purple-400 bg-purple-400/10"
                   >
                     {topic}
                   </Badge>
@@ -173,11 +176,11 @@ export const VideoAnalysis: React.FC<VideoAnalysisProps> = ({ video, results }) 
 
         {/* Action Items */}
         {results.actionItems && results.actionItems.length > 0 && (
-          <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+          <Card className="bg-black/40 backdrop-blur-xl border-purple-500/20 text-white">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
+              <CardTitle className="flex items-center space-x-3">
                 <span className="text-xl">✅</span>
-                <span>Action Items</span>
+                <span className="font-orbitron">Action Items</span>
               </CardTitle>
             </CardHeader>
             <CardContent>

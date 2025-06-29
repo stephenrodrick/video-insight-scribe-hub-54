@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useSocket } from '@/contexts/SocketContext';
+import { Headphones, Mic, Waveform, Volume2 } from 'lucide-react';
 
 export const RealtimeStatus = () => {
   const [activeUsers, setActiveUsers] = useState(1);
@@ -59,19 +59,21 @@ export const RealtimeStatus = () => {
   };
 
   return (
-    <Card className="bg-white/5 backdrop-blur-sm border-white/10 text-white">
+    <Card className="bg-black/40 backdrop-blur-xl border-purple-500/20 text-white">
       <CardContent className="py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <div className={`w-3 h-3 rounded-full ${getStatusColor()}`}></div>
-              <span className="text-sm font-medium">{getStatusText()}</span>
+              <span className="text-sm font-medium font-orbitron">{getStatusText()}</span>
             </div>
-            <Badge variant="outline" className="border-white/30 text-white">
+            <Badge variant="outline" className="border-purple-400/30 text-purple-400">
+              <Headphones className="w-3 h-3 mr-1" />
               {activeUsers} active users
             </Badge>
             {isConnected && (
               <Badge variant="outline" className="border-green-400/30 text-green-400">
+                <Waveform className="w-3 h-3 mr-1" />
                 Live Updates
               </Badge>
             )}
@@ -79,13 +81,13 @@ export const RealtimeStatus = () => {
           
           <div className="flex items-center space-x-4 text-sm text-gray-400">
             <div className="flex flex-col items-end">
-              <span>Real-time Processing</span>
+              <span className="font-orbitron">Real-time Processing</span>
               <span className="text-xs">Updated {getDataFreshness()}</span>
             </div>
             <div className="flex space-x-1">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse delay-100"></div>
-              <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse delay-200"></div>
+              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse delay-100"></div>
+              <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse delay-200"></div>
             </div>
           </div>
         </div>
@@ -93,15 +95,15 @@ export const RealtimeStatus = () => {
         {isConnected && (
           <div className="mt-3 flex items-center space-x-6 text-xs text-gray-400">
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <Mic className="w-3 h-3 text-green-400" />
               <span>OpenAI Whisper Ready</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <Volume2 className="w-3 h-3 text-blue-400" />
               <span>GPT Analysis Active</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <Waveform className="w-3 h-3 text-purple-400" />
               <span>Socket.io Connected</span>
             </div>
           </div>

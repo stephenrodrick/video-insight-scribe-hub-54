@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useSocket } from '@/contexts/SocketContext';
 import { useApiKeys } from '@/contexts/ApiKeyContext';
 import { VideoProcessor } from '@/utils/videoProcessor';
-import { ArrowUp, Youtube, Settings, AlertCircle } from 'lucide-react';
+import { Upload, Youtube, Settings, AlertCircle, Headphones, Mic, Waveform } from 'lucide-react';
 
 interface VideoUploaderProps {
   onVideoSelect: (video: any) => void;
@@ -39,7 +39,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
         setProcessingError('');
         onVideoSelect({ file: selectedFile, type: 'upload' });
         toast({
-          title: "File Selected",
+          title: "🎧 File Selected",
           description: `Selected: ${selectedFile.name}`,
         });
       } else {
@@ -55,8 +55,8 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
   const processVideo = async () => {
     if (!file && !youtubeUrl) {
       toast({
-        title: "No Video Selected",
-        description: "Please select a video file or enter a YouTube URL.",
+        title: "No Audio Selected",
+        description: "Please select an audio/video file or enter a YouTube URL.",
         variant: "destructive",
       });
       return;
@@ -72,7 +72,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
       return;
     }
 
-    console.log('Starting video processing with API key:', apiKeys.openai.substring(0, 10) + '...');
+    console.log('Starting audio processing with API key:', apiKeys.openai.substring(0, 10) + '...');
     setIsProcessing(true);
     setProcessingError('');
     
@@ -89,13 +89,13 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
       
       if (file) {
         toast({
-          title: "Processing Started",
-          description: "Your video is being processed with AI...",
+          title: "🎵 Processing Started",
+          description: "Your audio is being processed with AI...",
         });
         results = await processor.processVideoFile(file, handleProgress);
       } else if (youtubeUrl) {
         toast({
-          title: "Processing YouTube Video",
+          title: "🎬 Processing YouTube Audio",
           description: "Fetching and analyzing YouTube content...",
         });
         results = await processor.processYouTubeVideo(youtubeUrl, handleProgress);
@@ -104,14 +104,14 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
       if (results) {
         onAnalysisComplete(results);
         toast({
-          title: "Analysis Complete!",
-          description: "Your video has been successfully transcribed and analyzed.",
+          title: "🎉 Analysis Complete!",
+          description: "Your audio has been successfully transcribed and analyzed.",
         });
       }
 
     } catch (error) {
       console.error('Processing error:', error);
-      const errorMessage = error instanceof Error ? error.message : "An error occurred while processing your video.";
+      const errorMessage = error instanceof Error ? error.message : "An error occurred while processing your audio.";
       setProcessingError(errorMessage);
       toast({
         title: "Processing Error",
@@ -131,27 +131,30 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
       onVideoSelect({ url: youtubeUrl, type: 'youtube' });
       toast({
         title: "YouTube URL Added",
-        description: "Ready to process YouTube video.",
+        description: "Ready to process YouTube audio.",
       });
     }
   };
 
   return (
-    <Card className="bg-white/10 backdrop-blur-sm border-white/20 text-white">
+    <Card className="bg-black/40 backdrop-blur-xl border-purple-500/20 text-white">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <ArrowUp className="w-5 h-5" />
-            <span>Upload & Process Video</span>
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <Upload className="w-6 h-6 text-purple-400" />
+              <div className="absolute inset-0 blur-sm bg-purple-400/30 rounded"></div>
+            </div>
+            <span className="font-orbitron">Upload & Process Audio</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+          <div className="flex items-center space-x-3">
+            <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'} animate-pulse`}></div>
             <span className="text-sm">{isConnected ? 'Connected' : 'Disconnected'}</span>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowApiKeyDialog(true)}
-              className="border-white/30 text-white hover:bg-white/20"
+              className="border-purple-500/30 text-purple-400 hover:bg-purple-500/20"
             >
               <Settings className="w-4 h-4" />
             </Button>
@@ -160,7 +163,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
       </CardHeader>
       <CardContent>
         {/* API Key Status */}
-        <div className="mb-4 p-3 bg-white/5 rounded-lg border border-white/10">
+        <div className="mb-4 p-3 bg-black/30 rounded-lg border border-purple-500/20">
           <div className="flex items-center space-x-2">
             <div className={`w-2 h-2 rounded-full ${apiKeys.openai ? 'bg-green-400' : 'bg-red-400'}`}></div>
             <span className="text-sm">
@@ -199,20 +202,22 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
         )}
 
         <Tabs defaultValue="upload" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-white/10">
-            <TabsTrigger value="upload" className="data-[state=active]:bg-white/20">
-              File Upload
+          <TabsList className="grid w-full grid-cols-2 bg-black/30">
+            <TabsTrigger value="upload" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
+              <Mic className="w-4 h-4 mr-2" />
+              Audio Upload
             </TabsTrigger>
-            <TabsTrigger value="youtube" className="data-[state=active]:bg-white/20">
+            <TabsTrigger value="youtube" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
+              <Youtube className="w-4 h-4 mr-2" />
               YouTube URL
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="upload" className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="video-upload">Select Video/Audio File</Label>
+              <Label htmlFor="video-upload">Select Audio/Video File</Label>
               <div 
-                className="border-2 border-dashed border-white/30 rounded-lg p-8 text-center hover:border-white/50 transition-colors cursor-pointer"
+                className="border-2 border-dashed border-purple-500/30 rounded-lg p-8 text-center hover:border-purple-500/50 transition-colors cursor-pointer bg-black/20"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <input
@@ -223,16 +228,19 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
                   onChange={handleFileSelect}
                   className="hidden"
                 />
-                <div className="space-y-2">
-                  <div className="w-16 h-16 mx-auto bg-white/10 rounded-full flex items-center justify-center">
-                    <ArrowUp className="w-8 h-8" />
+                <div className="space-y-3">
+                  <div className="w-16 h-16 mx-auto bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center">
+                    <Headphones className="w-8 h-8 text-purple-400" />
                   </div>
-                  <p className="text-lg">Click to select video or audio file</p>
+                  <p className="text-lg">Click to select audio or video file</p>
                   <p className="text-sm text-gray-400">Supports MP4, MOV, AVI, MP3, WAV, and more (max 25MB)</p>
                 </div>
               </div>
               {file && (
-                <p className="text-sm text-green-400">Selected: {file.name}</p>
+                <p className="text-sm text-green-400 flex items-center space-x-2">
+                  <Waveform className="w-4 h-4" />
+                  <span>Selected: {file.name}</span>
+                </p>
               )}
             </div>
           </TabsContent>
@@ -247,12 +255,12 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
                   placeholder="https://www.youtube.com/watch?v=..."
                   value={youtubeUrl}
                   onChange={(e) => setYoutubeUrl(e.target.value)}
-                  className="bg-white/10 border-white/30 text-white placeholder-gray-400"
+                  className="bg-black/30 border-purple-500/30 text-white placeholder-gray-400"
                 />
                 <Button 
                   onClick={handleYoutubeSubmit}
                   variant="outline"
-                  className="border-white/30 text-white hover:bg-white/20"
+                  className="border-purple-500/30 text-purple-400 hover:bg-purple-500/20"
                 >
                   <Youtube className="w-4 h-4" />
                 </Button>
@@ -268,9 +276,18 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
                 <span>Processing with AI...</span>
                 <span>{progress}%</span>
               </div>
-              <Progress value={progress} className="bg-white/20" />
+              <Progress value={progress} className="bg-black/30" />
             </div>
-            <p className="text-sm text-gray-300">{currentStep}</p>
+            <p className="text-sm text-gray-300 flex items-center space-x-2">
+              <div className="audio-loading">
+                <div className="h-4"></div>
+                <div className="h-4"></div>
+                <div className="h-4"></div>
+                <div className="h-4"></div>
+                <div className="h-4"></div>
+              </div>
+              <span>{currentStep}</span>
+            </p>
             <div className="text-xs text-gray-400">
               Real-time updates via Socket.io • Status: {isConnected ? 'Connected' : 'Reconnecting...'}
             </div>
@@ -280,9 +297,23 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
         <Button 
           onClick={processVideo}
           disabled={(!file && !youtubeUrl) || isProcessing || !apiKeys.openai}
-          className="w-full mt-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-none disabled:opacity-50"
+          className="w-full mt-6 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-orange-600 text-white border-none disabled:opacity-50 font-orbitron"
         >
-          {isProcessing ? 'Processing with AI...' : 'Start Real-time AI Analysis'}
+          {isProcessing ? (
+            <div className="flex items-center space-x-2">
+              <div className="audio-loading">
+                <div className="h-3"></div>
+                <div className="h-3"></div>
+                <div className="h-3"></div>
+              </div>
+              <span>Processing with AI...</span>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <Headphones className="w-4 h-4" />
+              <span>Start Real-time AI Analysis</span>
+            </div>
+          )}
         </Button>
       </CardContent>
     </Card>

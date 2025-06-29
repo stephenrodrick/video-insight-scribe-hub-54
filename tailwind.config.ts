@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -21,7 +20,7 @@ export default {
 		extend: {
 			fontFamily: {
 				'inter': ['Inter', 'sans-serif'],
-				'poppins': ['Poppins', 'sans-serif'],
+				'orbitron': ['Orbitron', 'monospace'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -112,10 +111,10 @@ export default {
 				},
 				'pulse-glow': {
 					'0%, 100%': {
-						boxShadow: '0 0 5px rgba(59, 130, 246, 0.5)'
+						boxShadow: '0 0 5px rgba(139, 92, 246, 0.5)'
 					},
 					'50%': {
-						boxShadow: '0 0 20px rgba(59, 130, 246, 0.8)'
+						boxShadow: '0 0 20px rgba(139, 92, 246, 0.8), 0 0 30px rgba(236, 72, 153, 0.6)'
 					}
 				},
 				'gradient-shift': {
@@ -125,6 +124,14 @@ export default {
 					'50%': {
 						backgroundPosition: '100% 50%'
 					}
+				},
+				'audio-wave': {
+					'0%, 100%': {
+						transform: 'scaleY(1)'
+					},
+					'50%': {
+						transform: 'scaleY(1.5)'
+					}
 				}
 			},
 			animation: {
@@ -133,11 +140,12 @@ export default {
 				'fade-in': 'fade-in 0.5s ease-out',
 				'slide-up': 'slide-up 0.6s ease-out',
 				'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
-				'gradient-shift': 'gradient-shift 3s ease-in-out infinite'
+				'gradient-shift': 'gradient-shift 3s ease-in-out infinite',
+				'audio-wave': 'audio-wave 1s ease-in-out infinite'
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-				'tech-pattern': 'linear-gradient(45deg, rgba(59, 130, 246, 0.1) 25%, transparent 25%), linear-gradient(-45deg, rgba(59, 130, 246, 0.1) 25%, transparent 25%)'
+				'audio-pattern': 'repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(139, 92, 246, 0.1) 10px, rgba(139, 92, 246, 0.1) 12px), repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(236, 72, 153, 0.1) 20px, rgba(236, 72, 153, 0.1) 22px)'
 			}
 		}
 	},
