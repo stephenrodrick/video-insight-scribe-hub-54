@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Headphones, Mic, Waveform, Volume2, BarChart3, Brain } from 'lucide-react';
+import { Headphones, Mic, AudioWaveform as Waveform, Volume2, BarChart3, Brain } from 'lucide-react';
 
 interface VideoAnalysisProps {
   video: any;

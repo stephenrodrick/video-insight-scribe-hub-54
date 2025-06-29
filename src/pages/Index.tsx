@@ -7,7 +7,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SocketProvider } from '@/contexts/SocketContext';
 import { ApiKeyProvider } from '@/contexts/ApiKeyContext';
-import { Headphones, Mic, Waveform, Volume2 } from 'lucide-react';
+import { Headphones, Mic, AudioWaveform as Waveform, Volume2 } from 'lucide-react';
 
 const Index = () => {
   const { toast } = useToast();

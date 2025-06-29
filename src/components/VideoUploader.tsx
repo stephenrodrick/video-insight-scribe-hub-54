@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useSocket } from '@/contexts/SocketContext';
 import { useApiKeys } from '@/contexts/ApiKeyContext';
 import { VideoProcessor } from '@/utils/videoProcessor';
-import { Upload, Youtube, Settings, AlertCircle, Headphones, Mic, Waveform } from 'lucide-react';
+import { Upload, Youtube, Settings, AlertCircle, Headphones, Mic, AudioWaveform as Waveform } from 'lucide-react';
 
 interface VideoUploaderProps {
   onVideoSelect: (video: any) => void;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useSocket } from '@/contexts/SocketContext';
-import { Headphones, Mic, Waveform, Volume2 } from 'lucide-react';
+import { Headphones, Mic, AudioWaveform as Waveform, Volume2 } from 'lucide-react';
 
 export const RealtimeStatus = () => {
   const [activeUsers, setActiveUsers] = useState(1);

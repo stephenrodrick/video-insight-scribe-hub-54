@@ -1,5 +1,5 @@
 import React from 'react';
-import { Headphones, Mic, Waveform, Volume2 } from 'lucide-react';
+import { Headphones, Mic, AudioWaveform as Waveform, Volume2 } from 'lucide-react';
 
 export const Footer = () => {
   return (
