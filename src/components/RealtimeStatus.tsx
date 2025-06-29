@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useSocket } from '@/contexts/SocketContext';
-import SocketService from '@/services/socketService';
 
 export const RealtimeStatus = () => {
   const [activeUsers, setActiveUsers] = useState(1);
@@ -22,8 +21,7 @@ export const RealtimeStatus = () => {
     const latencyInterval = setInterval(async () => {
       if (isConnected && socket) {
         try {
-          const socketService = new SocketService();
-          const ping = await socketService.pingServer();
+          const ping = await socket.pingServer();
           setLatency(ping);
         } catch (error) {
           setLatency(-1);

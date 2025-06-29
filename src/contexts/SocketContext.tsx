@@ -1,8 +1,9 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import SocketService from '@/services/socketService';
 
 interface SocketContextType {
-  socket: any;
+  socket: SocketService | null;
   isConnected: boolean;
 }
 
@@ -20,38 +21,24 @@ export const useSocket = () => {
 };
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [socket, setSocket] = useState<any>(null);
+  const [socket, setSocket] = useState<SocketService | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // Simulate socket connection
     console.log('Initializing Socket.io connection...');
     
-    // Mock socket object for demonstration
-    const mockSocket = {
-      on: (event: string, callback: Function) => {
-        console.log(`Socket listening for event: ${event}`);
-      },
-      emit: (event: string, data: any) => {
-        console.log(`Socket emitting event: ${event}`, data);
-      },
-      disconnect: () => {
-        console.log('Socket disconnected');
-        setIsConnected(false);
-      }
-    };
-
-    setSocket(mockSocket);
+    const socketService = new SocketService();
+    setSocket(socketService);
     
-    // Simulate connection
+    // Simulate connection after a short delay
     setTimeout(() => {
       setIsConnected(true);
       console.log('Socket connected');
     }, 1000);
 
     return () => {
-      if (socket) {
-        socket.disconnect();
+      if (socketService) {
+        socketService.disconnect();
       }
     };
   }, []);

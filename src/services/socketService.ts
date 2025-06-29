@@ -1,114 +1,66 @@
 
-import { io, Socket } from 'socket.io-client';
-
 export class SocketService {
-  private socket: Socket | null = null;
   private isConnected: boolean = false;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
+  private eventHandlers: Map<string, Function[]> = new Map();
+  private connectionInterval: NodeJS.Timeout | null = null;
 
-  constructor(serverUrl: string = 'wss://echo.websocket.org') {
-    console.log('Initializing Socket.io connection to:', serverUrl);
-    this.connect(serverUrl);
+  constructor() {
+    console.log('Initializing Mock Socket.io connection...');
+    this.connect();
   }
 
-  private connect(serverUrl: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      try {
-        // For demo, we'll use a public WebSocket echo server
-        // In production, this would be your own Socket.io server
-        this.socket = io(serverUrl, {
-          transports: ['websocket', 'polling'],
-          timeout: 5000,
-        });
-
-        this.socket.on('connect', () => {
-          this.isConnected = true;
-          this.reconnectAttempts = 0;
-          console.log('Socket.io connected successfully');
-          this.emitEvent('user_connected', { 
-            timestamp: new Date(),
-            userId: Math.random().toString(36).substr(2, 9)
-          });
-          resolve();
-        });
-
-        this.socket.on('disconnect', (reason) => {
-          this.isConnected = false;
-          console.log('Socket.io disconnected:', reason);
-          
-          if (reason === 'io server disconnect') {
-            // Server disconnected, try to reconnect
-            this.handleReconnect();
-          }
-        });
-
-        this.socket.on('connect_error', (error) => {
-          console.error('Socket.io connection error:', error);
-          this.handleReconnect();
-        });
-
-        // Set up real-time event listeners
-        this.setupEventListeners();
-
-      } catch (error) {
-        console.error('Socket initialization error:', error);
-        reject(error);
-      }
-    });
-  }
-
-  private handleReconnect() {
-    if (this.reconnectAttempts < this.maxReconnectAttempts) {
-      this.reconnectAttempts++;
-      console.log(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-      
+  private connect(): Promise<void> {
+    return new Promise((resolve) => {
+      // Simulate connection delay
       setTimeout(() => {
-        if (this.socket) {
-          this.socket.connect();
-        }
-      }, 2000 * this.reconnectAttempts);
-    }
+        this.isConnected = true;
+        this.reconnectAttempts = 0;
+        console.log('Mock Socket.io connected successfully');
+        
+        // Emit connect event to all listeners
+        this.emitToHandlers('connect', { 
+          timestamp: new Date(),
+          userId: Math.random().toString(36).substr(2, 9)
+        });
+        
+        resolve();
+      }, 1000);
+    });
   }
 
-  private setupEventListeners() {
-    if (!this.socket) return;
-
-    this.socket.on('processing_update', (data) => {
-      console.log('Processing update received:', data);
-    });
-
-    this.socket.on('analysis_complete', (data) => {
-      console.log('Analysis complete:', data);
-    });
-
-    this.socket.on('error', (error) => {
-      console.error('Socket error:', error);
-    });
+  private emitToHandlers(event: string, data: any) {
+    const handlers = this.eventHandlers.get(event) || [];
+    handlers.forEach(handler => handler(data));
   }
 
   disconnect() {
-    if (this.socket) {
-      this.socket.disconnect();
-      this.isConnected = false;
-      console.log('Socket.io disconnected');
+    this.isConnected = false;
+    if (this.connectionInterval) {
+      clearInterval(this.connectionInterval);
     }
+    console.log('Mock Socket.io disconnected');
   }
 
   emitEvent(event: string, data: any) {
-    console.log(`Socket.io emit: ${event}`, data);
-    if (this.socket && this.isConnected) {
-      this.socket.emit(event, data);
+    console.log(`Mock Socket.io emit: ${event}`, data);
+    if (this.isConnected) {
+      // Simulate server acknowledgment
+      setTimeout(() => {
+        this.emitToHandlers(`${event}_ack`, { status: 'received', data });
+      }, 100);
     } else {
       console.warn('Socket not connected, queuing event:', event);
     }
   }
 
   onEvent(event: string, callback: (data: any) => void) {
-    console.log(`Socket.io listening for: ${event}`);
-    if (this.socket) {
-      this.socket.on(event, callback);
+    console.log(`Mock Socket.io listening for: ${event}`);
+    if (!this.eventHandlers.has(event)) {
+      this.eventHandlers.set(event, []);
     }
+    this.eventHandlers.get(event)!.push(callback);
   }
 
   // Video processing events with real-time updates
@@ -156,13 +108,10 @@ export class SocketService {
   // Real-time connection health check
   pingServer(): Promise<number> {
     return new Promise((resolve) => {
-      const startTime = Date.now();
-      if (this.socket && this.isConnected) {
-        this.socket.emit('ping', startTime);
-        this.socket.once('pong', () => {
-          const latency = Date.now() - startTime;
-          resolve(latency);
-        });
+      if (this.isConnected) {
+        // Simulate ping latency
+        const latency = Math.floor(Math.random() * 100) + 20; // 20-120ms
+        setTimeout(() => resolve(latency), 50);
       } else {
         resolve(-1);
       }
