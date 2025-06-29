@@ -9,6 +9,47 @@ export class ApiService {
     this.youtubeApiKey = youtubeKey;
   }
 
+  private async delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  private async retryWithBackoff<T>(
+    operation: () => Promise<T>,
+    maxRetries: number = 3,
+    baseDelay: number = 1000
+  ): Promise<T> {
+    let lastError: any;
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        return await operation();
+      } catch (error: any) {
+        lastError = error;
+        
+        // Don't retry on authentication errors or client errors (except rate limits)
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          throw error;
+        }
+        
+        // Only retry on rate limits (429) or server errors (5xx)
+        if (error.response?.status !== 429 && error.response?.status < 500) {
+          throw error;
+        }
+        
+        if (attempt === maxRetries) {
+          break;
+        }
+        
+        // Exponential backoff with jitter
+        const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
+        console.log(`Attempt ${attempt + 1} failed, retrying in ${Math.round(delay)}ms...`);
+        await this.delay(delay);
+      }
+    }
+    
+    throw lastError;
+  }
+
   async transcribeAudio(audioFile: File): Promise<string> {
     if (!this.openaiApiKey || this.openaiApiKey.trim() === '') {
       throw new Error('OpenAI API key is required for transcription');
@@ -18,7 +59,7 @@ export class ApiService {
     formData.append('file', audioFile);
     formData.append('model', 'whisper-1');
 
-    try {
+    const transcribeOperation = async () => {
       console.log('Starting transcription with OpenAI Whisper...');
       const response = await axios.post('https://api.openai.com/v1/audio/transcriptions', formData, {
         headers: {
@@ -30,13 +71,17 @@ export class ApiService {
       
       console.log('Transcription completed successfully');
       return response.data.text;
+    };
+
+    try {
+      return await this.retryWithBackoff(transcribeOperation, 3, 2000);
     } catch (error: any) {
       console.error('Transcription error:', error.response?.data || error.message);
       
       if (error.response?.status === 401) {
         throw new Error('Invalid OpenAI API key. Please check your API key.');
       } else if (error.response?.status === 429) {
-        throw new Error('API rate limit exceeded. Please try again later.');
+        throw new Error('API rate limit exceeded. Please try again later or check your API key usage limits.');
       } else if (error.code === 'ECONNABORTED') {
         throw new Error('Request timeout. The file might be too large.');
       } else {
@@ -56,7 +101,7 @@ export class ApiService {
       throw new Error('OpenAI API key is required for analysis');
     }
 
-    try {
+    const analysisOperation = async () => {
       console.log('Starting AI analysis with GPT-4...');
       console.log('Using API key:', this.openaiApiKey.substring(0, 10) + '...');
       
@@ -113,6 +158,10 @@ export class ApiService {
           actionItems: ['Review the full analysis']
         };
       }
+    };
+
+    try {
+      return await this.retryWithBackoff(analysisOperation, 3, 2000);
     } catch (error: any) {
       console.error('Analysis error details:', {
         status: error.response?.status,
@@ -124,7 +173,7 @@ export class ApiService {
       if (error.response?.status === 401) {
         throw new Error('Invalid OpenAI API key. Please check your API key and ensure it has GPT-4 access.');
       } else if (error.response?.status === 429) {
-        throw new Error('API rate limit exceeded. Please try again later.');
+        throw new Error('API rate limit exceeded. Please try again later or check your API key usage limits.');
       } else if (error.response?.status === 400) {
         throw new Error(`Bad request: ${error.response?.data?.error?.message || 'Invalid request format'}`);
       } else if (error.response?.status === 403) {
@@ -140,7 +189,7 @@ export class ApiService {
       throw new Error('YouTube API key is required');
     }
 
-    try {
+    const youtubeOperation = async () => {
       console.log('Fetching YouTube video info...');
       const response = await axios.get(
         `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${this.youtubeApiKey}&part=snippet,contentDetails,statistics`
@@ -152,6 +201,10 @@ export class ApiService {
       
       console.log('YouTube video info fetched successfully');
       return response.data.items[0];
+    };
+
+    try {
+      return await this.retryWithBackoff(youtubeOperation, 2, 1000);
     } catch (error: any) {
       console.error('YouTube API error:', error.response?.data || error.message);
       
