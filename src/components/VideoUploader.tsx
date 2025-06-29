@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useSocket } from '@/contexts/SocketContext';
 import { useApiKeys } from '@/contexts/ApiKeyContext';
 import { VideoProcessor } from '@/utils/videoProcessor';
-import { ArrowUp, Youtube, Settings } from 'lucide-react';
+import { ArrowUp, Youtube, Settings, AlertCircle } from 'lucide-react';
 
 interface VideoUploaderProps {
   onVideoSelect: (video: any) => void;
@@ -26,6 +25,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState('');
+  const [processingError, setProcessingError] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { socket, isConnected } = useSocket();
@@ -36,6 +36,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
     if (selectedFile) {
       if (selectedFile.type.startsWith('video/') || selectedFile.type.startsWith('audio/')) {
         setFile(selectedFile);
+        setProcessingError('');
         onVideoSelect({ file: selectedFile, type: 'upload' });
         toast({
           title: "File Selected",
@@ -71,7 +72,9 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
       return;
     }
 
+    console.log('Starting video processing with API key:', apiKeys.openai.substring(0, 10) + '...');
     setIsProcessing(true);
+    setProcessingError('');
     
     try {
       const processor = new VideoProcessor(apiKeys.openai, apiKeys.youtube);
@@ -79,6 +82,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
       const handleProgress = (progress: number, status: string) => {
         setProgress(progress);
         setCurrentStep(status);
+        console.log(`Processing progress: ${progress}% - ${status}`);
       };
 
       let results;
@@ -107,9 +111,11 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
 
     } catch (error) {
       console.error('Processing error:', error);
+      const errorMessage = error instanceof Error ? error.message : "An error occurred while processing your video.";
+      setProcessingError(errorMessage);
       toast({
         title: "Processing Error",
-        description: error instanceof Error ? error.message : "An error occurred while processing your video.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -121,6 +127,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
 
   const handleYoutubeSubmit = () => {
     if (youtubeUrl) {
+      setProcessingError('');
       onVideoSelect({ url: youtubeUrl, type: 'youtube' });
       toast({
         title: "YouTube URL Added",
@@ -152,6 +159,45 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {/* API Key Status */}
+        <div className="mb-4 p-3 bg-white/5 rounded-lg border border-white/10">
+          <div className="flex items-center space-x-2">
+            <div className={`w-2 h-2 rounded-full ${apiKeys.openai ? 'bg-green-400' : 'bg-red-400'}`}></div>
+            <span className="text-sm">
+              OpenAI API Key: {apiKeys.openai ? 'Configured' : 'Not Set'}
+            </span>
+          </div>
+          {apiKeys.youtube && (
+            <div className="flex items-center space-x-2 mt-1">
+              <div className="w-2 h-2 rounded-full bg-green-400"></div>
+              <span className="text-sm">YouTube API Key: Configured</span>
+            </div>
+          )}
+        </div>
+
+        {/* Error Display */}
+        {processingError && (
+          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+            <div className="flex items-start space-x-2">
+              <AlertCircle className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-red-400 font-medium">Processing Error</p>
+                <p className="text-red-300 text-sm mt-1">{processingError}</p>
+                {processingError.includes('API key') && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowApiKeyDialog(true)}
+                    className="mt-2 border-red-400 text-red-400 hover:bg-red-400/20"
+                  >
+                    Configure API Key
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <Tabs defaultValue="upload" className="w-full">
           <TabsList className="grid w-full grid-cols-2 bg-white/10">
             <TabsTrigger value="upload" className="data-[state=active]:bg-white/20">
@@ -182,7 +228,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
                     <ArrowUp className="w-8 h-8" />
                   </div>
                   <p className="text-lg">Click to select video or audio file</p>
-                  <p className="text-sm text-gray-400">Supports MP4, MOV, AVI, MP3, WAV, and more</p>
+                  <p className="text-sm text-gray-400">Supports MP4, MOV, AVI, MP3, WAV, and more (max 25MB)</p>
                 </div>
               </div>
               {file && (
@@ -233,8 +279,8 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({
 
         <Button 
           onClick={processVideo}
-          disabled={(!file && !youtubeUrl) || isProcessing}
-          className="w-full mt-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-none"
+          disabled={(!file && !youtubeUrl) || isProcessing || !apiKeys.openai}
+          className="w-full mt-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-none disabled:opacity-50"
         >
           {isProcessing ? 'Processing with AI...' : 'Start Real-time AI Analysis'}
         </Button>

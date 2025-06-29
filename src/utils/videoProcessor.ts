@@ -1,4 +1,3 @@
-
 import { ApiService } from '../services/apiService';
 import SocketService from '../services/socketService';
 
@@ -24,6 +23,7 @@ export class VideoProcessor {
         throw new Error('File size must be less than 25MB for transcription');
       }
 
+      console.log('Starting video processing for file:', file.name);
       onProgress(10, 'Preparing for transcription...');
       this.socketService.emitProcessingUpdate('preparing', 10);
 
@@ -44,15 +44,16 @@ export class VideoProcessor {
         throw new Error(`Speech-to-text failed: ${error.message}`);
       }
 
-      onProgress(60, 'Analyzing content with AI...');
+      onProgress(60, 'Analyzing content with GPT-4...');
       this.socketService.emitProcessingUpdate('analyzing', 60);
 
       let analysis;
       try {
+        console.log('Starting GPT-4 analysis...');
         analysis = await this.apiService.analyzeText(transcription);
-        console.log('Analysis completed successfully');
+        console.log('GPT-4 analysis completed successfully:', analysis);
       } catch (error: any) {
-        console.error('Analysis failed:', error.message);
+        console.error('GPT-4 analysis failed:', error.message);
         throw new Error(`Smart analysis failed: ${error.message}`);
       }
 

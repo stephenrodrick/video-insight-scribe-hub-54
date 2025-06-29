@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 export class ApiService {
@@ -58,9 +57,11 @@ export class ApiService {
     }
 
     try {
-      console.log('Starting AI analysis with GPT...');
+      console.log('Starting AI analysis with GPT-4...');
+      console.log('Using API key:', this.openaiApiKey.substring(0, 10) + '...');
+      
       const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-        model: 'gpt-4',
+        model: 'gpt-4o-mini', // Using gpt-4o-mini as it's more reliable and faster
         messages: [
           {
             role: 'system',
@@ -91,6 +92,7 @@ export class ApiService {
 
       const content = response.data.choices[0].message.content;
       console.log('AI analysis completed successfully');
+      console.log('GPT Response:', content);
       
       try {
         const analysis = JSON.parse(content);
@@ -112,12 +114,21 @@ export class ApiService {
         };
       }
     } catch (error: any) {
-      console.error('Analysis error:', error.response?.data || error.message);
+      console.error('Analysis error details:', {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        message: error.message
+      });
       
       if (error.response?.status === 401) {
-        throw new Error('Invalid OpenAI API key. Please check your API key.');
+        throw new Error('Invalid OpenAI API key. Please check your API key and ensure it has GPT-4 access.');
       } else if (error.response?.status === 429) {
         throw new Error('API rate limit exceeded. Please try again later.');
+      } else if (error.response?.status === 400) {
+        throw new Error(`Bad request: ${error.response?.data?.error?.message || 'Invalid request format'}`);
+      } else if (error.response?.status === 403) {
+        throw new Error('Access denied. Your API key may not have access to GPT-4 models.');
       } else {
         throw new Error(`Analysis failed: ${error.response?.data?.error?.message || error.message}`);
       }
