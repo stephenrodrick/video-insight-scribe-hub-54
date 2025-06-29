@@ -1,4 +1,4 @@
-### AudX ###
+# AudX #
 # Video Insight Scribe Hub
 
 A powerful tool for automatic video transcription, analysis, and insight generation using AI.
@@ -87,7 +87,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
-Stephen Rodrick - [@stephenrodrick](https://twitter.com/stephenrodrick) - email@example.com
+Stephen Rodrick - stephenrodrick17@gmail.com
 
 Project Link: [https://github.com/stephenrodrick/video-insight-scribe-hub-54](https://github.com/stephenrodrick/video-insight-scribe-hub-54)
 (https://spectacular-baklava-83adcf.netlify.app/) 
